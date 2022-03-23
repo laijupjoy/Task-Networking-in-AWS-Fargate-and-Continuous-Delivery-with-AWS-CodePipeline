@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - $(aws ecr get-login --no-include-email --region us-east-1)
+  build:
+    commands:
+      - docker build -t heartapp:v1 .
+      - docker tag heartapp:v1 471071075551.dkr.ecr.us-east-1.amazonaws.com/mydockerrepo:latest
+  post_build:
+    commands:
+      - docker push 471071075551.dkr.ecr.us-east-1.amazonaws.com/mydockerrepo:latest
+      - printf '[{"name":heartapp,"imageUri":"%s"}]' 471071075551.dkr.ecr.us-east-1.amazonaws.com/mydockerrepo:latest > imagedefinitions.json
+artifacts:
+  files: imagedefinitions.json
